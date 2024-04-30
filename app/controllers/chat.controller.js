@@ -1,16 +1,16 @@
 const pool = require('../config/db.pool.js');
 const moment = require('moment-timezone');
 
-exports.getAllUser = async (req, res) => {    
+exports.getAllMessage = async (req, res) => {    
     const timestamp = moment().tz('Asia/Jakarta').format('DD-MM-YYYY HH:mm [WIB]');
-    
+
     try {
-        const response = await pool.query('SELECT * FROM users');
+        const response = await pool.query('SELECT * FROM message');
 
         res.status(200).json({
             success: true,
             timestamp: timestamp,
-            message: "Berhasil query semua user",
+            message: "Berhasil query semua message",
             data: response.rows,
         })
     }
@@ -19,24 +19,27 @@ exports.getAllUser = async (req, res) => {
         res.status(500).json({
             success: false,
             timestamp: timestamp,
-            message: "Gagal query semua user",
+            message: "Gagal query semua message",
             log: err,
         })
     }
 }
 
-exports.getUserById = async (req, res) => {
+exports.getMessageById = async (req, res) => {
     const timestamp = moment().tz('Asia/Jakarta').format('DD-MM-YYYY HH:mm [WIB]');
 
     try {
-        const userQueryId = req.params.id;
-        const response = await pool.query('SELECT * FROM users WHERE npm = $1', [userQueryId]);
-
+        const userQueryMessage = req.params.id;
+        const response = await pool.query('SELECT message, time FROM message WHERE _from = $1', [userQueryMessage]);
+ 
         res.status(200).json({
             success: true,
             timestamp: timestamp,
-            message: "Berhasil query user berdasarkan id",
-            data: response.rows,
+            message: "Berhasil query message berdasarkan user",
+            data: {
+                sender: userQueryMessage,
+                messages: response.rows,
+            },
         })
     }
 
@@ -44,29 +47,28 @@ exports.getUserById = async (req, res) => {
         res.status(500).json({
             success: false,
             timestamp: timestamp,
-            message: "Gagal query user berdasarkan id",
+            message: "Gagal query message berdasarkan user",
             log: err,
         })
     }
 }
 
-exports.postUser = async (req, res) => {
+exports.postMessage = async (req, res) => {
     const timestamp = moment().tz('Asia/Jakarta').format('DD-MM-YYYY HH:mm [WIB]');
 
     try {
-        const npmInsert = req.body.npm;
-        const namaInsert = req.body.display_name;
-        const passwordInsert = req.body.password;
-
-        await pool.query('INSERT INTO users (npm, display_name, password) VALUES ($1, $2, $3)', [npmInsert, namaInsert, passwordInsert]);
+        const messageInsert = req.body.message;
+        const senderInsert = req.body._from;
+        
+        await pool.query('INSERT INTO message (message, _from) VALUES ($1, $2)', [messageInsert, senderInsert]);
 
         res.status(200).json({
             success: true,
             timestamp: timestamp,
-            message: "Berhasil insert user ke databse",
+            message: "Berhasil insert massage ke databse",
             log:{
-                npm: npmInsert,
-                nama: namaInsert,
+                sender: senderInsert,
+                message: messageInsert,
             },
         })
     }
@@ -75,7 +77,7 @@ exports.postUser = async (req, res) => {
         res.status(500).json({
             success: false,
             timestamp: timestamp,
-            message: "Gagal insert user ke database",
+            message: "Gagal insert message ke database",
             log: err,
         })
     }
