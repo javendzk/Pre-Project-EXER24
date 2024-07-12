@@ -1,1 +1,1 @@
-# Solo-Pre-Project-EXER24
+# Pre-Project-EXER24
