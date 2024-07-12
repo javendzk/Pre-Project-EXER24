@@ -1,4 +1,4 @@
-const { pool } = require('../config/db.pool.js');
+const pool = require('../config/db.pool.js');
 const moment = require('moment-timezone');
 const auth = require('../services/auth.service.js');
 
