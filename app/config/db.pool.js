@@ -1,24 +1,32 @@
+const { Pool } = require('pg');
 require('dotenv').config();
-const { Pool }  = require('pg');
-let { PGHOST, PGDATABASE, PGUSER, PGPASSWORD, PGPORT} = process.env;
+
+let { PGHOST, PGDATABASE, PGUSER, PGPASSWORD, ENDPOINT_ID } = process.env;
+PGPASSWORD = decodeURIComponent(PGPASSWORD);
 
 const pool = new Pool ({
-    user: PGUSER,
-    host: PGHOST,
-    database: PGDATABASE,
-    password: PGPASSWORD,
-    port: PGPORT,
-    ssl: {
-      require: true,
-    },
-})
+  host: PGHOST,
+  database: PGDATABASE,
+  username: PGUSER,
+  password: PGPASSWORD,
+  port: 5432,
+  ssl: {
+    require: true,
+  },
+});
 
-pool.connect()
+const connectLoop = () => {
+    pool.connect()
     .then(() => {
         console.log ("[v] Database connected");
     })
     .catch((err) => {
         console.log ("[x] Database connection failed\n" + err);
+        setTimeout(connectLoop, 2000);
     })
+
+} 
+
+connectLoop();
 
 module.exports = pool;

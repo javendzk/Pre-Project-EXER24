@@ -4,10 +4,12 @@ const {
   getAllUser,
   getUserById,
   postUser,
+  authUser
 } = require("../controllers/account.controller.js");
 
 router.get("/", getAllUser);
-router.get("/:id", getUserById);
 router.post("/", postUser);
+router.get("/login", authUser);
+router.get("/:id", getUserById);
 
 module.exports = router;

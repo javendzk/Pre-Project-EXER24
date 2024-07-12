@@ -1,5 +1,6 @@
-const pool = require('../config/db.pool.js');
+const { pool } = require('../config/db.pool.js');
 const moment = require('moment-timezone');
+const auth = require('../services/auth.service.js');
 
 exports.getAllUser = async (req, res) => {    
     const timestamp = moment().tz('Asia/Jakarta').format('DD-MM-YYYY HH:mm [WIB]');
@@ -79,4 +80,21 @@ exports.postUser = async (req, res) => {
             log: err,
         })
     }
+}
+
+exports.authUser = async (req, res) => {
+    try {
+        const result = await auth(req.body);
+
+        if(result.success) res.status(200).json(result);
+        else res.status(401).json(result);
+    }
+
+    catch(Error){
+        res.status(500).json({
+            success: false,
+            message: Error.message,
+        })
+    }
+
 }
